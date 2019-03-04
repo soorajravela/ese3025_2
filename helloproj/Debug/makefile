@@ -29,7 +29,7 @@ all: helloproj.axf
 helloproj.axf: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: MCU Linker'
-	arm-none-eabi-gcc -nostdlib -L"/home/sooraj/Documents/lpc_board_nxp_lpcxpresso_1769/Debug" -L"/home/sooraj/Documents/lpc_chip_175x_6x/Debug" -Xlinker -Map="helloproj.map" -Xlinker --gc-sections -Xlinker -print-memory-usage -mcpu=cortex-m3 -mthumb -T "helloproj_Debug.ld" -o "helloproj.axf" $(OBJS) $(USER_OBJS) $(LIBS)
+	arm-none-eabi-gcc -nostdlib -L"/home/sooraj/work/ese3025_2/git_stuff/ese3025_2/lpc_board_nxp_lpcxpresso_1769/Debug" -L"/home/sooraj/work/ese3025_2/git_stuff/ese3025_2/lpc_chip_175x_6x/Debug" -Xlinker -Map="helloproj.map" -Xlinker --gc-sections -Xlinker -print-memory-usage -mcpu=cortex-m3 -mthumb -T "helloproj_Debug.ld" -o "helloproj.axf" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 	$(MAKE) --no-print-directory post-build

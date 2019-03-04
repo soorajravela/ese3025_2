@@ -55,7 +55,7 @@
 #define LED1_GPIO_BIT_NUM                       25
 #define LED3_GPIO_PORT_NUM                      3
 #define LED3_GPIO_BIT_NUM                       26
-#define LED2_GPIO_PORT_NUM                      3
+#define LED2_GPIO_PORT_NUM                      0
 #define LED2_GPIO_BIT_NUM                       27
 
 
