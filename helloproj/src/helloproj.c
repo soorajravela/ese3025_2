@@ -34,8 +34,8 @@ int main(void) {
     // Set the LED to the state of "On"
     Board_LED_Set(0, false);
     Board_LED_Set(1, false);
-    Board_LED_Set(2, false);
     Board_LED_Set(3, false);
+
 #endif
 #endif
 
@@ -44,19 +44,27 @@ int main(void) {
     // Force the counter to be placed into memory
     volatile static int i = 0 ;
     volatile static int j = 0 ;
-    int a = {0,1,3,2};
+
+
     // Enter an infinite loop, just incrementing a counter
     while(1) {
            // uint8_t LEDNumber;
 
             {
-                Board_LED_Toggle(0);
-                for(j=0;j<1e6;j++);
-                Board_LED_Toggle(1);
-                for(j=0;j<1e6;j++);
-                Board_LED_Toggle(2);
-                for(j=0;j<1e6;j++);
-                Board_LED_Toggle(3);
+
+            	 Board_LED_Set(0,false);
+            	 for(j=0;j<1e6;j++);
+            	 Board_LED_Set(0,true);
+            	 for(j=0;j<1e6;j++);
+            	 Board_LED_Set(1,false);
+            	 for(j=0;j<1e6;j++);
+            	 Board_LED_Set(1,true);
+            	 for(j=0;j<1e6;j++);
+            	 Board_LED_Set(3,false);
+            	 for(j=0;j<1e6;j++);
+            	 Board_LED_Set(3,true);
+
+
             }
 
 
