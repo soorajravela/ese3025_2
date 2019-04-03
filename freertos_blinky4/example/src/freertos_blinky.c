@@ -1,4 +1,4 @@
-/**
+/*
  * @brief FreeRTOS Blinky example
  *
  * @note
@@ -19,7 +19,7 @@
  * in the software without notification. NXP Semiconductors also makes no
  * representation or warranty that such application will be suitable for the
  * specified use without further testing or modification.
- *+++++++++++++++++++++++++++++++++++++++++
+ *
  * @par
  * Permission to use, copy, modify, and distribute this software and its
  * documentation is hereby granted, under NXP Semiconductors' and its
@@ -53,12 +53,6 @@ static void prvSetupHardware(void)
 
 	/* Initial LED0 state is off */
 	Board_LED_Set(0, false);
-
-	/* Initial LED1 state is off */
-	Board_LED_Set(1, false);
-
-	/* Initial LED3 state is off */
-	Board_LED_Set(3, false);
 }
 
 /* LED1 toggle thread */
@@ -70,8 +64,7 @@ static void vLEDTask1(void *pvParameters) {
 		LedState = (bool) !LedState;
 
 		/* About a 3Hz on/off toggle rate */
-		vTaskDelay(configTICK_RATE_HZ / 0);
-
+		vTaskDelay(configTICK_RATE_HZ / 60);
 	}
 }
 
@@ -84,21 +77,7 @@ static void vLEDTask2(void *pvParameters) {
 		LedState = (bool) !LedState;
 
 		/* About a 7Hz on/off toggle rate */
-		vTaskDelay(configTICK_RATE_HZ / 1.3);
-
-	}
-}
-
-/* LED3 toggle thread */
-static void vLEDTask3(void *pvParameters) {
-	bool LedState = false;
-
-	while (1) {
-		Board_LED_Set(3, LedState);
-		LedState = (bool) !LedState;
-
-		/* About a 14Hz on/off toggle rate */
-		vTaskDelay(configTICK_RATE_HZ / 2.8);
+		vTaskDelay(configTICK_RATE_HZ / 140);
 	}
 }
 
@@ -110,7 +89,7 @@ static void vUARTTask(void *pvParameters) {
 		DEBUGOUT("Tick: %d\r\n", tickCnt);
 		tickCnt++;
 
-		//* About a 1s delay here */
+		/* About a 1s delay here */
 		vTaskDelay(configTICK_RATE_HZ);
 	}
 }
@@ -129,21 +108,17 @@ int main(void)
 
 	/* LED1 toggle thread */
 	xTaskCreate(vLEDTask1, (signed char *) "vTaskLed1",
-				configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 1Ul),
+				configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 1UL),
 				(xTaskHandle *) NULL);
 
 	/* LED2 toggle thread */
 	xTaskCreate(vLEDTask2, (signed char *) "vTaskLed2",
 				configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 1UL),
 				(xTaskHandle *) NULL);
-	/* LED3 toggle thread */
-	xTaskCreate(vLEDTask3, (signed char *) "vTaskLed3",
-				configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 1UL),
-				(xTaskHandle *) NULL);
 
-	//* UART output thread, simply counts seconds */
+	/* UART output thread, simply counts seconds */
 	xTaskCreate(vUARTTask, (signed char *) "vTaskUart",
-			configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 1UL),
+				configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 1UL),
 				(xTaskHandle *) NULL);
 
 	/* Start the scheduler */

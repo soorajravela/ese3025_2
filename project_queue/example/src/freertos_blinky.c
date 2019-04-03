@@ -28,85 +28,129 @@
  * copyright, permission, and disclaimer notice must appear in all copies of
  * this code.
  */
-#include "stdio.h"
+
 #include "board.h"
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
 
-volatile static int j=0;
+/*****************************************************************************
+ * Private types/enumerations/variables
+ ****************************************************************************/
 
+/*****************************************************************************
+ * Public types/enumerations/variables
+ ****************************************************************************/
+
+/*****************************************************************************
+ * Private functions
+ ****************************************************************************/
+
+/* Sets up system hardware */
+static void prvSetupHardware(void)
+{
+	SystemCoreClockUpdate();
+	Board_Init();
+
+	Board_LED_Set(0, false);
+	Board_LED_Set(1, false);
+	Board_LED_Set(2, false);
+	Board_LED_Set(0, true);
+	Board_LED_Set(1, true);
+	Board_LED_Set(2, true);
+
+}
 
 xQueueHandle GLobal_Queue_Handle = 0;
 
-void sender_task(void *p)
-{
-	int i=0;
-	 while(1) {
+/* LED1 toggle thread */
+static void vsender_task(void *pvParameters) {
+
+	volatile static int j=0;
+	int i = (0,1,2);
 
 
-		                 Board_LED_Set(0,false);
-		             	 for(j=0;j<1e6;j++);
-		             	 Board_LED_Set(0,true);
-		             	 for(j=0;j<1e6;j++);
-		             	 Board_LED_Set(1,false);
-		             	 for(j=0;j<1e6;j++);
-		             	 Board_LED_Set(1,true);
-		             	 for(j=0;j<1e6;j++);
-		             	 Board_LED_Set(3,false);
-		             	 for(j=0;j<1e6;j++);
-		             	 Board_LED_Set(3,true);
-		             	 for(j=0;j<1e6;j++);
-
-
-	            	 xQueueSend(GLobal_Queue_Handle, &i ,100);
-	           }
-	 }
-
-void receiver_task(void *p)
-{
-    int rx_t = 0;
-	 while(1) {
-
-		                 Board_LED_Set(0,false);
-		             	 for(j=0;j<1e6;j++);
-		             	 Board_LED_Set(0,true);
-		             	 for(j=0;j<1e6;j++);
-		             	 Board_LED_Set(1,false);
-		             	 for(j=0;j<1e6;j++);
-		             	 Board_LED_Set(1,true);
-		             	 for(j=0;j<1e6;j++);
-		             	 Board_LED_Set(3,false);
-		             	 for(j=0;j<1e6;j++);
-		             	 Board_LED_Set(3,true);
-
-
-	            	 xQueueReceive(GLobal_Queue_Handle, &rx_t,100);
-	           }
-	 }
+	while(1) {
+       {
+	   (xQueueSend(GLobal_Queue_Handle, &i ,1000));
+	   int c,n;
+	   	for (c = 0; c <= 1; c++) {
+	   	    n = rand() % 100 + 1;
 
 
 
-int main (void)
+	                            Board_LED_Set(i,false);
+				             	 for(j=0;j<1e5;j++);
+				             	 Board_LED_Set(i,true);
 
-{
-	GLobal_Queue_Handle = xQueueCreate(3, sizeof(int));
-
-	/* Create tasks */
-	xTaskCreate(sender_task, (signed char*) "vSenderTask",
-			configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 2Ul),
-			(xTaskHandle *) NULL);
-
-	xTaskCreate(receiver_task, (signed char*) "vReceiverTask",
-			configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 1Ul),
-			(xTaskHandle *) NULL);
-
-
-	/* Start the scheduler */
-		vTaskStartScheduler();
-
-		return 0;
+	}
+  }
+}
 }
 
 
+/* LED2 toggle thread */
+void vreceiver_task(void *pvParameters) {
 
+	volatile static int j=0;
+	int i = (0,1,2);
+	while(1){
+
+		 xQueueReceive(GLobal_Queue_Handle, &i,1000);
+		 int c,n;
+		 	for (c = 0; c <= 1; c++) {
+		 	    n = rand() % 100 + 1;
+
+	                             Board_LED_Set(0,false);
+		 		             	 for(j=0;j<1e5;j++);
+				             	 Board_LED_Set(0,true);
+				                 Board_LED_Set(1,false);
+				             	 for(j=0;j<1e5;j++);
+				             	 Board_LED_Set(1,true);
+				             	 Board_LED_Set(2,false);
+				             	 for(j=0;j<1e5;j++);
+				             	 Board_LED_Set(2,true);
+				             	 for(j=0;j<1e5;j++);
+
+
+
+}
+}
+}
+
+
+/*****************************************************************************
+ * Public functions
+ ****************************************************************************/
+
+/**
+ * @brief	main routine for FreeRTOS blinky example
+ * @return	Nothing, function should not exit
+ */
+int main(void)
+{
+	GLobal_Queue_Handle = xQueueCreate(10, sizeof(int));
+	prvSetupHardware();
+
+	/* LED1 toggle thread */
+	xTaskCreate(vsender_task, (signed char *) "vSendertask",
+				configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 2UL),
+				(xTaskHandle *) NULL);
+
+	/* LED2 toggle thread */
+	xTaskCreate(vreceiver_task, (signed char *) "vReceivertask",
+				configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 1UL),
+				(xTaskHandle *) NULL);
+
+
+
+	/* Start the scheduler */
+	vTaskStartScheduler();
+
+	/* Should never arrive here */
+	return 1;
+}
+
+/**
+ * @}
+ */

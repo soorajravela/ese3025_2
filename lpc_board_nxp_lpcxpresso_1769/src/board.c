@@ -30,7 +30,7 @@
  */
 
 #include "board.h"
-#include "string.h"
+
 
 #include "retarget.h"
 
@@ -53,10 +53,8 @@
 #define LED0_GPIO_BIT_NUM                       22
 #define LED1_GPIO_PORT_NUM                      3
 #define LED1_GPIO_BIT_NUM                       25
-#define LED3_GPIO_PORT_NUM                      3
-#define LED3_GPIO_BIT_NUM                       26
-#define LED2_GPIO_PORT_NUM                      0
-#define LED2_GPIO_BIT_NUM                       27
+#define LED2_GPIO_PORT_NUM                      3
+#define LED2_GPIO_BIT_NUM                       26
 
 
 /*****************************************************************************
@@ -78,8 +76,8 @@ static void Board_LED_Init(void)
 	/* Set the PIO_22 as output */
 	Chip_GPIO_WriteDirBit(LPC_GPIO, LED0_GPIO_PORT_NUM, LED0_GPIO_BIT_NUM, true);
     Chip_GPIO_WriteDirBit(LPC_GPIO, LED1_GPIO_PORT_NUM, LED1_GPIO_BIT_NUM, true);
-    Chip_GPIO_WriteDirBit(LPC_GPIO, LED3_GPIO_PORT_NUM, LED2_GPIO_BIT_NUM, true);
-    Chip_GPIO_WriteDirBit(LPC_GPIO, LED3_GPIO_PORT_NUM, LED3_GPIO_BIT_NUM, true);
+    Chip_GPIO_WriteDirBit(LPC_GPIO, LED2_GPIO_PORT_NUM, LED2_GPIO_BIT_NUM, true);
+
 }
 
 /*****************************************************************************
@@ -150,12 +148,10 @@ void Board_LED_Set(uint8_t LEDNumber, bool On)
 	if(LEDNumber == 2) {
 			 Chip_GPIO_WritePortBit(LPC_GPIO, LED2_GPIO_PORT_NUM, LED2_GPIO_BIT_NUM, On);
 		 }
-	 if(LEDNumber == 3) {
-		 Chip_GPIO_WritePortBit(LPC_GPIO, LED3_GPIO_PORT_NUM, LED3_GPIO_BIT_NUM, On);
-	 }
-//}
-	//}
+
 }
+	//}
+
 /* Returns the current state of a board LED */
 bool Board_LED_Test(uint8_t LEDNumber)
 {
@@ -170,10 +166,7 @@ bool Board_LED_Test(uint8_t LEDNumber)
 	if (LEDNumber == 2) {
 		state = Chip_GPIO_ReadPortBit(LPC_GPIO, LED2_GPIO_PORT_NUM, LED2_GPIO_BIT_NUM);
 	}
-	if (LEDNumber == 3) {
-		state = Chip_GPIO_ReadPortBit(LPC_GPIO, LED3_GPIO_PORT_NUM, LED3_GPIO_BIT_NUM);
 
-	}
 
 
 	return state;
@@ -190,12 +183,12 @@ void Board_LED_Toggle(uint8_t LEDNumber)
 	case 1:
 		Board_LED_Set(LEDNumber, !Board_LED_Test(LEDNumber));
 	break;
-	case 3:
+	case 2:
 		Board_LED_Set(LEDNumber, !Board_LED_Test(LEDNumber));
 	break;
-	default:
-		Board_LED_Set(LEDNumber, !Board_LED_Test(LEDNumber));
-	break;
+	//default:
+		//Board_LED_Set(LEDNumber, !Board_LED_Test(LEDNumber));
+	//break;
 	}
 //		if(LEDNumber==0)
 //				Board_LED_Set(LEDNumber, !Board_LED_Test(LEDNumber));

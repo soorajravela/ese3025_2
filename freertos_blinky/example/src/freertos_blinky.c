@@ -32,6 +32,7 @@
 #include "board.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "queue.h"
 
 /*****************************************************************************
  * Private types/enumerations/variables
@@ -51,48 +52,108 @@ static void prvSetupHardware(void)
 	SystemCoreClockUpdate();
 	Board_Init();
 
-	/* Initial LED0 state is off */
 	Board_LED_Set(0, false);
+	Board_LED_Set(1, false);
+	Board_LED_Set(2, false);
+	Board_LED_Set(0, true);
+	Board_LED_Set(1, true);
+	Board_LED_Set(2, true);
+
 }
+
+xQueueHandle GLobal_Queue_Handle = 0;
 
 /* LED1 toggle thread */
-static void vLEDTask1(void *pvParameters) {
-	bool LedState = false;
+static void vsender_task(void *pvParameters) {
 
-	while (1) {
-		Board_LED_Set(0, LedState);
-		LedState = (bool) !LedState;
+	volatile static int j=0;
+	int i = (0,1,2);
 
-		/* About a 3Hz on/off toggle rate */
-		vTaskDelay(configTICK_RATE_HZ / 60);
+
+	while(1) {
+       //for(;;)
+       {
+	   (xQueueSend(GLobal_Queue_Handle, &i ,1000));
+	   int c,n;
+	   	for (c = 0; c <= 1; c++) {
+	   	    n = rand() % 100 + 1;
+
+
+		//Board_LED_Set(i, false);
+//	break;
+//	case 1:
+//		Board_LED_Set(i, false);
+//	break;
+//	case 2:
+//		Board_LED_Set(i, false);
+//	break;
+//}
+	                            Board_LED_Set(i,false);
+				             	 for(j=0;j<1e5;j++);
+				             	 Board_LED_Set(i,true);
+//				             	 //for(j=0;j<1e6;j++);
+//				             	 Board_LED_Set(1,false);
+//				             	 for(j=0;j<1e6;j++);
+//				             	 Board_LED_Set(1,true);
+//				             	 //for(j=0;j<1e6;j++);
+//				             	 Board_LED_Set(2,false);
+//				             	 for(j=0;j<1e6;j++);
+//				             	 Board_LED_Set(2,true);
+//				             	 for(j=0;j<1e6;j++);
+
+
+
+
 	}
+  }
 }
+}
+
 
 /* LED2 toggle thread */
-static void vLEDTask2(void *pvParameters) {
-	bool LedState = false;
+void vreceiver_task(void *pvParameters) {
 
-	while (1) {
-		Board_LED_Set(1, LedState);
-		LedState = (bool) !LedState;
+	volatile static int j=0;
+	int i = (0,1,2);
 
-		/* About a 7Hz on/off toggle rate */
-		vTaskDelay(configTICK_RATE_HZ / 140);
-	}
+
+
+	while(1){
+	 //for(;;){
+
+		 xQueueReceive(GLobal_Queue_Handle, &i,1000);
+		 int c,n;
+		 	for (c = 0; c <= 1; c++) {
+		 	    n = rand() % 100 + 1;
+//			case 0:
+//				Board_LED_Set(0, false);
+//			break;
+//			case 1:
+//				Board_LED_Set(1, false);
+//			break;
+//			case 2:
+//				Board_LED_Set(2, false);
+//			break;
+//	}
+	                             Board_LED_Set(0,false);
+		 		             	 for(j=0;j<1e5;j++);
+				             	 Board_LED_Set(0,true);
+//				             	// for(j=0;j<1e6;j++);
+				             	 Board_LED_Set(1,false);
+				             	 for(j=0;j<1e5;j++);
+				             	 Board_LED_Set(1,true);
+//				             	 //for(j=0;j<1e6;j++);
+				             	 Board_LED_Set(2,false);
+				             	 for(j=0;j<1e5;j++);
+				             	 Board_LED_Set(2,true);
+				             	 for(j=0;j<1e5;j++);
+
+
+	//}
+}
+}
 }
 
-/* UART (or output) thread */
-static void vUARTTask(void *pvParameters) {
-	int tickCnt = 0;
-
-	while (1) {
-		DEBUGOUT("Tick: %d\r\n", tickCnt);
-		tickCnt++;
-
-		/* About a 1s delay here */
-		vTaskDelay(configTICK_RATE_HZ);
-	}
-}
 
 /*****************************************************************************
  * Public functions
@@ -104,22 +165,20 @@ static void vUARTTask(void *pvParameters) {
  */
 int main(void)
 {
+	GLobal_Queue_Handle = xQueueCreate(10, sizeof(int));
 	prvSetupHardware();
 
 	/* LED1 toggle thread */
-	xTaskCreate(vLEDTask1, (signed char *) "vTaskLed1",
-				configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 1UL),
+	xTaskCreate(vsender_task, (signed char *) "vSendertask",
+				configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 2UL),
 				(xTaskHandle *) NULL);
 
 	/* LED2 toggle thread */
-	xTaskCreate(vLEDTask2, (signed char *) "vTaskLed2",
+	xTaskCreate(vreceiver_task, (signed char *) "vReceivertask",
 				configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 1UL),
 				(xTaskHandle *) NULL);
 
-	/* UART output thread, simply counts seconds */
-	xTaskCreate(vUARTTask, (signed char *) "vTaskUart",
-				configMINIMAL_STACK_SIZE, NULL, (tskIDLE_PRIORITY + 1UL),
-				(xTaskHandle *) NULL);
+
 
 	/* Start the scheduler */
 	vTaskStartScheduler();
