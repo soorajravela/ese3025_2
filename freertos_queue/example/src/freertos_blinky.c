@@ -78,31 +78,9 @@ static void vsender_task(void *pvParameters) {
 	   	for (c = 0; c <= 1; c++) {
 	   	    n = rand() % 100 + 1;
 
-
-		//Board_LED_Set(i, false);
-//	break;
-//	case 1:
-//		Board_LED_Set(i, false);
-//	break;
-//	case 2:
-//		Board_LED_Set(i, false);
-//	break;
-//}
-	                            Board_LED_Set(i,false);
-				             	 for(j=0;j<1e5;j++);
-				             	 Board_LED_Set(i,true);
-//				             	 //for(j=0;j<1e6;j++);
-//				             	 Board_LED_Set(1,false);
-//				             	 for(j=0;j<1e6;j++);
-//				             	 Board_LED_Set(1,true);
-//				             	 //for(j=0;j<1e6;j++);
-//				             	 Board_LED_Set(2,false);
-//				             	 for(j=0;j<1e6;j++);
-//				             	 Board_LED_Set(2,true);
-//				             	 for(j=0;j<1e6;j++);
-
-
-
+	             Board_LED_Set(i,false);
+             	 for(j=0;j<1e5;j++);
+				  Board_LED_Set(i,true);
 
 	}
   }
@@ -116,40 +94,24 @@ void vreceiver_task(void *pvParameters) {
 	volatile static int j=0;
 	int i = (0,1,2);
 
-
-
 	while(1){
-	 //for(;;){
+
 
 		 xQueueReceive(GLobal_Queue_Handle, &i,1000);
 		 int c,n;
 		 	for (c = 0; c <= 1; c++) {
-		 	    n = rand() % 100 + 1;
-//			case 0:
-//				Board_LED_Set(0, false);
-//			break;
-//			case 1:
-//				Board_LED_Set(1, false);
-//			break;
-//			case 2:
-//				Board_LED_Set(2, false);
-//			break;
-//	}
+
 	                             Board_LED_Set(0,false);
 		 		             	 for(j=0;j<1e5;j++);
 				             	 Board_LED_Set(0,true);
-//				             	// for(j=0;j<1e6;j++);
 				             	 Board_LED_Set(1,false);
 				             	 for(j=0;j<1e5;j++);
 				             	 Board_LED_Set(1,true);
-//				             	 //for(j=0;j<1e6;j++);
 				             	 Board_LED_Set(2,false);
 				             	 for(j=0;j<1e5;j++);
 				             	 Board_LED_Set(2,true);
 				             	 for(j=0;j<1e5;j++);
 
-
-	//}
 }
 }
 }
